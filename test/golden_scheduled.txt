@@ -1,0 +1,18 @@
+def rank_k_reduce_6x16_scheduled(K: size, A: f32[6, K] @ DRAM,
+                                 B: f32[K, 16] @ DRAM, C: f32[6, 16] @ DRAM):
+    C_reg: f32[6, 2, 8] @ AVX2
+    for i0 in seq(0, 6):
+        for i2 in seq(0, 2):
+            mm256_loadu_ps(C_reg[i0, i2, 0:8], C[i0, 8 * i2:8 + 8 * i2])
+    for k in seq(0, K):
+        B_reg: f32[2, 8] @ AVX2
+        for io in seq(0, 2):
+            mm256_loadu_ps(B_reg[io, 0:8], B[k, 8 * io:8 + 8 * io])
+        for i in seq(0, 6):
+            A_reg: f32[8] @ AVX2
+            mm256_broadcast_ss(A_reg[0:8], A[i, k:1 + k])
+            for jo in seq(0, 2):
+                mm256_fmadd_ps(C_reg[i, jo, 0:8], A_reg[0:8], B_reg[jo, 0:8])
+    for i0 in seq(0, 6):
+        for i2 in seq(0, 2):
+            mm256_storeu_ps(C[i0, 8 * i2:8 + 8 * i2], C_reg[i0, i2, 0:8])

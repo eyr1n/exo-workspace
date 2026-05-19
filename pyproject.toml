@@ -1,0 +1,37 @@
+[project]
+name = "exo-workspace"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Rin Iwai", email = "me@eyrin.jp" }
+]
+requires-python = ">=3.13"
+dependencies = ["exo-lang"]
+
+[dependency-groups]
+dev = [
+    "cmake>=4.3.2",
+    "pytest>=9.0.3",
+    "ruff>=0.15.13",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.4,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+exo-lang = { workspace = true }
+
+[tool.uv.workspace]
+members = ["exo"]
+
+[tool.ruff]
+extend-exclude = ["exo"]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+ignore = ["F403", "F405"]
+
+[tool.pytest]
+testpaths = ["test"]

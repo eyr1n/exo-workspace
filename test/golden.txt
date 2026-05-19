@@ -1,0 +1,6 @@
+def rank_k_reduce_6x16(K: size, A: f32[6, K] @ DRAM, B: f32[K, 16] @ DRAM,
+                       C: f32[6, 16] @ DRAM):
+    for i in seq(0, 6):
+        for j in seq(0, 16):
+            for k in seq(0, K):
+                C[i, j] += A[i, k] * B[k, j]
